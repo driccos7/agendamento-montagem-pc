@@ -4,12 +4,12 @@ import { getFirestore, collection, addDoc, getDocs, query, where }
 from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "SUA_API_KEY",
-  authDomain: "SEU_DOMINIO",
-  projectId: "SEU_PROJECT_ID",
-  storageBucket: "SEU_BUCKET",
-  messagingSenderId: "SEU_ID",
-  appId: "SEU_APP_ID"
+  apiKey: "AIzaSyCclgaKtHJ_fKlDcuhsf_hoPOMrVSAhQvk",
+  authDomain: "agendamento-montagem-pc-5c626.firebaseapp.com",
+  projectId: "agendamento-montagem-pc-5c626",
+  storageBucket: "agendamento-montagem-pc-5c626.firebasestorage.app",
+  messagingSenderId: "787900616308",
+  appId: "1:787900616308:web:d025d073090f395d7c4b21"
 };
 
 const app = initializeApp(firebaseConfig);
