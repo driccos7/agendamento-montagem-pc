@@ -39,7 +39,6 @@ function mostrarMsg(texto, tipo = "success") {
 // 🔹 Bloqueia datas passadas
 const hoje = new Date().toISOString().split("T")[0];
 dataInput.min = hoje;
-dataInput.value = hoje;
 
 // 🔹 Horários base
 const horariosBase = [
@@ -52,10 +51,10 @@ const horariosBase = [
   "17:00"
 ];
 
-// 🔹 Carrega horários livres
+// 🔹 Carrega horários livres (CORRIGIDO PARA SAFARI)
 async function carregarHorarios(dataSelecionada) {
   horaInput.innerHTML = '<option value="">Escolha um horário</option>';
-  horaInput.disabled = true;
+  horaInput.setAttribute("disabled", true);
 
   const q = query(
     collection(db, "agendamentos"),
@@ -75,7 +74,9 @@ async function carregarHorarios(dataSelecionada) {
   });
 
   if (horaInput.options.length > 1) {
-    horaInput.disabled = false;
+    horaInput.removeAttribute("disabled");
+  } else {
+    horaInput.setAttribute("disabled", true);
   }
 }
 
@@ -101,7 +102,7 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
-  // Segurança extra
+  // 🔒 Segurança extra
   const q = query(
     collection(db, "agendamentos"),
     where("data", "==", data),
@@ -132,9 +133,8 @@ form.addEventListener("submit", async (e) => {
 
   mostrarMsg("Agendamento realizado com sucesso!", "success");
   form.reset();
-  horaInput.disabled = true;
+  horaInput.setAttribute("disabled", true);
 });
-
 
 
 
