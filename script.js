@@ -32,6 +32,7 @@ const form = document.getElementById("formAgendamento");
 const msg = document.getElementById("msg");
 const diaLotadoDiv = document.getElementById("diaLotado");
 
+// 🔹 Util
 function mostrarMsg(texto, tipo = "success") {
   msg.className = `alert alert-${tipo} mt-3 text-center`;
   msg.innerText = texto;
@@ -53,17 +54,20 @@ const horariosBase = [
   "17:00"
 ];
 
-// 🔴 LIMITE DIÁRIO
+// 🔴 Limite diário
 const LIMITE_DIARIO = 5;
 
-// 🔹 Carrega horários livres + limite diário
-async function carregarHorarios(dataSelecionada) {
+// 🔹 Reset seguro do select (Safari)
+function resetarHorarios() {
   horaInput.innerHTML = '<option value="">Escolha um horário</option>';
-  horaInput.disabled = false;
   horaInput.disabled = true;
+}
 
-
-  diaLotadoDiv.classList.add("d-none");
+// 🔹 Carrega horários livres
+async function carregarHorarios(dataSelecionada) {
+  resetarHorarios();
+  msg.classList.add("d-none");
+  diaLotadoDiv?.classList.add("d-none");
 
   const q = query(
     collection(db, "agendamentos"),
@@ -74,7 +78,7 @@ async function carregarHorarios(dataSelecionada) {
 
   // 🔴 Dia lotado
   if (snap.size >= LIMITE_DIARIO) {
-    diaLotadoDiv.classList.remove("d-none");
+    diaLotadoDiv?.classList.remove("d-none");
     return;
   }
 
@@ -90,19 +94,21 @@ async function carregarHorarios(dataSelecionada) {
   });
 
   if (horaInput.options.length > 1) {
-    horaInput.removeAttribute("disabled");
+    horaInput.disabled = false;
   }
 }
 
-// 🔹 Atualiza horários ao escolher data
-dataInput.addEventListener("change", () => {
-  msg.classList.add("d-none");
-  diaLotadoDiv.classList.add("d-none");
-
+// 🔹 Safari NÃO É CONFIÁVEL → input + change
+function atualizarHorarios() {
   if (dataInput.value) {
     carregarHorarios(dataInput.value);
+  } else {
+    resetarHorarios();
   }
-});
+}
+
+dataInput.addEventListener("change", atualizarHorarios);
+dataInput.addEventListener("input", atualizarHorarios);
 
 // 🔹 Envio do formulário
 form.addEventListener("submit", async (e) => {
@@ -150,10 +156,5 @@ form.addEventListener("submit", async (e) => {
 
   mostrarMsg("Agendamento realizado com sucesso!", "success");
   form.reset();
-  horaInput.setAttribute("disabled", true);
+  resetarHorarios();
 });
-
-
-
-
-
