@@ -1,8 +1,14 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, where }
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// 🔹 Configuração do Firebase
+// 🔹 Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCclgaKtHJ_fKlDcuhsf_hoPOMrVSAhQvk",
   authDomain: "agendamento-montagem-pc-5c626.firebaseapp.com",
@@ -15,17 +21,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// 🔹 Captura dos inputs do formulário
+// 🔹 Inputs
 const nomeInput = document.getElementById("nome");
 const servicoInput = document.getElementById("servico");
 const dataInput = document.getElementById("data");
-const hoje = new Date().toISOString().split("T")[0];
-dataInput.min = hoje;
-dataInput.value = hoje;
-
-
 const horaInput = document.getElementById("hora");
+const form = document.getElementById("formAgendamento");
 
+// 🔹 Mensagens visuais
 function mostrarMsg(texto, tipo = "success") {
   const msg = document.getElementById("msg");
   msg.className = `alert alert-${tipo} mt-3 text-center`;
@@ -33,24 +36,72 @@ function mostrarMsg(texto, tipo = "success") {
   msg.classList.remove("d-none");
 }
 
-const form = document.getElementById("formAgendamento");
+// 🔹 Bloqueia datas passadas
+const hoje = new Date().toISOString().split("T")[0];
+dataInput.min = hoje;
+dataInput.value = hoje;
 
+// 🔹 Horários base
+const horariosBase = [
+  "09:00",
+  "10:00",
+  "11:00",
+  "14:00",
+  "15:00",
+  "16:00",
+  "17:00"
+];
+
+// 🔹 Carrega horários livres
+async function carregarHorarios(dataSelecionada) {
+  horaInput.innerHTML = '<option value="">Escolha um horário</option>';
+  horaInput.disabled = true;
+
+  const q = query(
+    collection(db, "agendamentos"),
+    where("data", "==", dataSelecionada)
+  );
+
+  const snap = await getDocs(q);
+  const ocupados = snap.docs.map(d => d.data().hora);
+
+  horariosBase.forEach(hora => {
+    if (!ocupados.includes(hora)) {
+      const opt = document.createElement("option");
+      opt.value = hora;
+      opt.textContent = hora;
+      horaInput.appendChild(opt);
+    }
+  });
+
+  if (horaInput.options.length > 1) {
+    horaInput.disabled = false;
+  }
+}
+
+// 🔹 Atualiza horários ao escolher data
+dataInput.addEventListener("change", () => {
+  if (dataInput.value) {
+    carregarHorarios(dataInput.value);
+  }
+});
+
+// 🔹 Envio do formulário
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
+  document.getElementById("msg").classList.add("d-none");
 
   const nome = nomeInput.value.trim();
-  const servico = servicoInput.value.trim();
+  const servico = servicoInput.value;
   const data = dataInput.value;
   const hora = horaInput.value;
 
-  // 🔹 Verifica se algum campo está vazio
   if (!nome || !servico || !data || !hora) {
     mostrarMsg("Preencha todos os campos.", "danger");
-
     return;
   }
 
-  // 🔹 Checa se o horário já existe no Firebase
+  // Segurança extra
   const q = query(
     collection(db, "agendamentos"),
     where("data", "==", data),
@@ -59,22 +110,31 @@ form.addEventListener("submit", async (e) => {
 
   const existe = await getDocs(q);
   if (!existe.empty) {
-    alert("⛔ Horário já ocupado!");
+    mostrarMsg("Horário já ocupado. Escolha outro.", "warning");
     return;
   }
 
-  // 🔹 Abre o WhatsApp imediatamente (funciona no iPhone)
-  const msg = `Agendamento PC:%0ANome: ${nome}%0AServiço: ${servico}%0AData: ${data}%0AHora: ${hora}`;
-  window.open("https://wa.me/5511943266607?text=" + msg);
-
-  // 🔹 Salva o agendamento no Firebase
   await addDoc(collection(db, "agendamentos"), {
-    nome, servico, data, hora
+    nome,
+    servico,
+    data,
+    hora
   });
 
-  alert("✅ Agendado com sucesso!");
+  const msgZap =
+    `Agendamento PC:%0A` +
+    `Nome: ${nome}%0A` +
+    `Serviço: ${servico}%0A` +
+    `Data: ${data}%0A` +
+    `Hora: ${hora}`;
+
+  window.open("https://wa.me/5511943266607?text=" + msgZap);
+
+  mostrarMsg("Agendamento realizado com sucesso!", "success");
   form.reset();
+  horaInput.disabled = true;
 });
+
 
 
 
