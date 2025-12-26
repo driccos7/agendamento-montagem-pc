@@ -13,6 +13,7 @@
   <h3 class="text-center">🖥️ Agendar Montagem de PC</h3>
 
   <form id="formAgendamento" class="mt-4">
+
     <input class="form-control mb-2" id="nome" placeholder="Seu nome" required>
 
     <select class="form-control mb-2" id="servico" required>
@@ -24,24 +25,24 @@
     </select>
 
     <input class="form-control mb-2" type="date" id="data" required>
-    <select class="form-control mb-2" id="hora" required disabled>
-  <option value="">Escolha um horário</option>
-</select>
 
+    <select class="form-control mb-2" id="hora" required disabled>
+      <option value="">Escolha um horário</option>
+    </select>
 
     <button class="btn btn-success w-100">Agendar</button>
   </form>
-  
-  <div id="msg" class="alert d-none mt-3 text-center"></div>
 
+  <div id="msg" class="alert d-none mt-3 text-center"></div>
 </div>
 
-<!-- 🔹 Rodapé com WhatsApp clicável -->
 <footer style="text-align:center; padding:20px; font-size:16px;">
-  Contato: <a href="https://wa.me/5511943266607" target="_blank">11 94326-6607</a>
+  Contato:
+  <a href="https://wa.me/5511943266607" target="_blank">11 94326-6607</a>
 </footer>
 
 <script type="module" src="script.js"></script>
 </body>
 </html>
+
 
