@@ -47,7 +47,7 @@ Serviço: ${servico}%0A
 Data: ${data}%0A
 Hora: ${hora}`;
 
-  window.open("https://wa.me/55SEUNUMERO?text=" + msg);
+  window.open("https://wa.me/5511943266607?text=" + msg);
 
   alert("✅ Agendado com sucesso!");
   form.reset();
