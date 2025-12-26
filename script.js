@@ -59,7 +59,8 @@ const LIMITE_DIARIO = 5;
 // 🔹 Carrega horários livres + limite diário
 async function carregarHorarios(dataSelecionada) {
   horaInput.innerHTML = '<option value="">Escolha um horário</option>';
-  horaInput.setAttribute("disabled", true);
+  horaInput.disabled = false;
+
   diaLotadoDiv.classList.add("d-none");
 
   const q = query(
