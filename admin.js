@@ -2,7 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getFirestore, collection, getDocs, deleteDoc, doc }
 from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const senhaCorreta = "1234"; // 🔴 MUDE ISSO
+const senhaCorreta = "pc2025"; // 🔴 MUDE ISSO
 
 function login() {
   if (document.getElementById("senha").value !== senhaCorreta) {
