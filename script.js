@@ -19,6 +19,9 @@ const db = getFirestore(app);
 const nomeInput = document.getElementById("nome");
 const servicoInput = document.getElementById("servico");
 const dataInput = document.getElementById("data");
+const hoje = new Date().toISOString().split("T")[0];
+dataInput.min = hoje;
+
 const horaInput = document.getElementById("hora");
 
 function mostrarMsg(texto, tipo = "success") {
