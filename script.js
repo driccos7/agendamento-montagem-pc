@@ -21,6 +21,13 @@ const servicoInput = document.getElementById("servico");
 const dataInput = document.getElementById("data");
 const horaInput = document.getElementById("hora");
 
+function mostrarMsg(texto, tipo = "success") {
+  const msg = document.getElementById("msg");
+  msg.className = `alert alert-${tipo} mt-3 text-center`;
+  msg.innerText = texto;
+  msg.classList.remove("d-none");
+}
+
 const form = document.getElementById("formAgendamento");
 
 form.addEventListener("submit", async (e) => {
