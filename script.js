@@ -28,7 +28,7 @@ const dataInput = document.getElementById("data");
 const horaInput = document.getElementById("hora");
 const form = document.getElementById("formAgendamento");
 
-// 🔹 Mensagens visuais
+// 🔹 Mensagens
 function mostrarMsg(texto, tipo = "success") {
   const msg = document.getElementById("msg");
   msg.className = `alert alert-${tipo} mt-3 text-center`;
@@ -51,7 +51,10 @@ const horariosBase = [
   "17:00"
 ];
 
-// 🔹 Carrega horários livres (CORRIGIDO PARA SAFARI)
+// 🔴 LIMITE DIÁRIO
+const LIMITE_DIARIO = 5;
+
+// 🔹 Carrega horários livres + limite diário
 async function carregarHorarios(dataSelecionada) {
   horaInput.innerHTML = '<option value="">Escolha um horário</option>';
   horaInput.setAttribute("disabled", true);
@@ -62,6 +65,13 @@ async function carregarHorarios(dataSelecionada) {
   );
 
   const snap = await getDocs(q);
+
+  // 🔴 Dia lotado
+  if (snap.size >= LIMITE_DIARIO) {
+    mostrarMsg("Dia lotado. Escolha outra data.", "warning");
+    return;
+  }
+
   const ocupados = snap.docs.map(d => d.data().hora);
 
   horariosBase.forEach(hora => {
@@ -75,13 +85,12 @@ async function carregarHorarios(dataSelecionada) {
 
   if (horaInput.options.length > 1) {
     horaInput.removeAttribute("disabled");
-  } else {
-    horaInput.setAttribute("disabled", true);
   }
 }
 
 // 🔹 Atualiza horários ao escolher data
 dataInput.addEventListener("change", () => {
+  document.getElementById("msg").classList.add("d-none");
   if (dataInput.value) {
     carregarHorarios(dataInput.value);
   }
@@ -111,7 +120,7 @@ form.addEventListener("submit", async (e) => {
 
   const existe = await getDocs(q);
   if (!existe.empty) {
-    mostrarMsg("Horário já ocupado. Escolha outro.", "warning");
+    mostrarMsg("Horário já ocupado.", "warning");
     return;
   }
 
@@ -135,6 +144,7 @@ form.addEventListener("submit", async (e) => {
   form.reset();
   horaInput.setAttribute("disabled", true);
 });
+
 
 
 
