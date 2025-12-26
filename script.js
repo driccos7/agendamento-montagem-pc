@@ -29,8 +29,10 @@ const horaInput = document.getElementById("hora");
 const form = document.getElementById("formAgendamento");
 
 // 🔹 Mensagens
+const msg = document.getElementById("msg");
+const diaLotadoDiv = document.getElementById("diaLotado");
+
 function mostrarMsg(texto, tipo = "success") {
-  const msg = document.getElementById("msg");
   msg.className = `alert alert-${tipo} mt-3 text-center`;
   msg.innerText = texto;
   msg.classList.remove("d-none");
@@ -58,6 +60,7 @@ const LIMITE_DIARIO = 5;
 async function carregarHorarios(dataSelecionada) {
   horaInput.innerHTML = '<option value="">Escolha um horário</option>';
   horaInput.setAttribute("disabled", true);
+  diaLotadoDiv.classList.add("d-none");
 
   const q = query(
     collection(db, "agendamentos"),
@@ -68,7 +71,7 @@ async function carregarHorarios(dataSelecionada) {
 
   // 🔴 Dia lotado
   if (snap.size >= LIMITE_DIARIO) {
-    mostrarMsg("Dia lotado. Escolha outra data.", "warning");
+    diaLotadoDiv.classList.remove("d-none");
     return;
   }
 
@@ -90,7 +93,9 @@ async function carregarHorarios(dataSelecionada) {
 
 // 🔹 Atualiza horários ao escolher data
 dataInput.addEventListener("change", () => {
-  document.getElementById("msg").classList.add("d-none");
+  msg.classList.add("d-none");
+  diaLotadoDiv.classList.add("d-none");
+
   if (dataInput.value) {
     carregarHorarios(dataInput.value);
   }
@@ -99,7 +104,7 @@ dataInput.addEventListener("change", () => {
 // 🔹 Envio do formulário
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
-  document.getElementById("msg").classList.add("d-none");
+  msg.classList.add("d-none");
 
   const nome = nomeInput.value.trim();
   const servico = servicoInput.value;
@@ -144,6 +149,7 @@ form.addEventListener("submit", async (e) => {
   form.reset();
   horaInput.setAttribute("disabled", true);
 });
+
 
 
 
