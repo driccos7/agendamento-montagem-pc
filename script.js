@@ -2,6 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getFirestore, collection, addDoc, getDocs, query, where }
 from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+// 🔹 Configuração do Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCclgaKtHJ_fKlDcuhsf_hoPOMrVSAhQvk",
   authDomain: "agendamento-montagem-pc-5c626.firebaseapp.com",
@@ -14,7 +15,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// 🔹 CORREÇÃO: capturando os inputs
+// 🔹 Captura dos inputs do formulário
 const nomeInput = document.getElementById("nome");
 const servicoInput = document.getElementById("servico");
 const dataInput = document.getElementById("data");
@@ -25,11 +26,18 @@ const form = document.getElementById("formAgendamento");
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const nome = nomeInput.value;
-  const servico = servicoInput.value;
+  const nome = nomeInput.value.trim();
+  const servico = servicoInput.value.trim();
   const data = dataInput.value;
   const hora = horaInput.value;
 
+  // 🔹 Verifica se algum campo está vazio
+  if (!nome || !servico || !data || !hora) {
+    alert("⛔ Preencha todos os campos!");
+    return;
+  }
+
+  // 🔹 Checa se o horário já existe no Firebase
   const q = query(
     collection(db, "agendamentos"),
     where("data", "==", data),
@@ -42,20 +50,18 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
+  // 🔹 Abre o WhatsApp imediatamente (funciona no iPhone)
+  const msg = `Agendamento PC:%0ANome: ${nome}%0AServiço: ${servico}%0AData: ${data}%0AHora: ${hora}`;
+  window.open("https://wa.me/5511943266607?text=" + msg);
+
+  // 🔹 Salva o agendamento no Firebase
   await addDoc(collection(db, "agendamentos"), {
     nome, servico, data, hora
   });
 
-  const msg = `Agendamento PC:%0A
-Nome: ${nome}%0A
-Serviço: ${servico}%0A
-Data: ${data}%0A
-Hora: ${hora}`;
-
-  window.open("https://wa.me/5511943266607?text=" + msg);
-
   alert("✅ Agendado com sucesso!");
   form.reset();
 });
+
 
 
