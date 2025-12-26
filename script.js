@@ -1,4 +1,3 @@
-// 🔴 COLE AQUI SEU LINK DO FIREBASE DEPOIS
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, query, where }
 from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -14,6 +13,12 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
+// 🔹 CORREÇÃO: capturando os inputs
+const nomeInput = document.getElementById("nome");
+const servicoInput = document.getElementById("servico");
+const dataInput = document.getElementById("data");
+const horaInput = document.getElementById("hora");
 
 const form = document.getElementById("formAgendamento");
 
@@ -52,4 +57,5 @@ Hora: ${hora}`;
   alert("✅ Agendado com sucesso!");
   form.reset();
 });
+
 
