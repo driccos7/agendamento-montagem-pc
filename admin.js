@@ -1,9 +1,17 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, getDocs, deleteDoc, doc }
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-// 🔐 Senha do admin
-const senhaCorreta = "pc2025"; // já configurada
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  deleteDoc,
+  doc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // 🔹 Firebase
 const firebaseConfig = {
@@ -16,41 +24,63 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getFirestore(app);
 
-// 🔹 Função de login
-function login() {
-  const senha = document.getElementById("senha").value;
-  if (senha !== senhaCorreta) {
-    alert("Senha errada");
-    return;
+// 🔹 DOM
+const emailInput = document.getElementById("email");
+const senhaInput = document.getElementById("senha");
+const btnLogin = document.getElementById("btnLogin");
+const btnLogout = document.getElementById("btnLogout");
+const lista = document.getElementById("lista");
+
+// 🔐 Login
+btnLogin.addEventListener("click", async () => {
+  try {
+    await signInWithEmailAndPassword(
+      auth,
+      emailInput.value,
+      senhaInput.value
+    );
+  } catch {
+    alert("Login inválido");
   }
-  document.getElementById("senha").value = "";
-  carregar(); // só carrega se a senha estiver correta
-}
+});
 
-// 🔹 Função para carregar agendamentos
-async function carregar() {
-  const lista = document.getElementById("lista");
+// 🔓 Logout
+btnLogout.addEventListener("click", async () => {
+  await signOut(auth);
+});
+
+// 🔐 Estado de autenticação
+onAuthStateChanged(auth, user => {
+  if (user) {
+    btnLogout.classList.remove("d-none");
+    carregarAgendamentos();
+  } else {
+    lista.innerHTML = "";
+    btnLogout.classList.add("d-none");
+  }
+});
+
+// 📥 Carregar agendamentos
+async function carregarAgendamentos() {
   lista.innerHTML = "";
+  const snap = await getDocs(collection(db, "agendamentos"));
 
-  const dados = await getDocs(collection(db, "agendamentos"));
-  dados.forEach(d => {
+  snap.forEach(d => {
     const li = document.createElement("li");
     li.innerHTML = `
-      ${d.data().nome} - ${d.data().data} ${d.data().hora} 
+      ${d.data().nome} - ${d.data().data} ${d.data().hora}
       <button>❌</button>
     `;
 
-    const btn = li.querySelector("button");
-    btn.addEventListener("click", async () => {
+    li.querySelector("button").onclick = async () => {
       await deleteDoc(doc(db, "agendamentos", d.id));
-      carregar();
-    });
+      carregarAgendamentos();
+    };
 
     lista.appendChild(li);
   });
 }
-
-window.login = login;
 
