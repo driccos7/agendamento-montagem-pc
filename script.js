@@ -40,7 +40,8 @@ form.addEventListener("submit", async (e) => {
 
   // 🔹 Verifica se algum campo está vazio
   if (!nome || !servico || !data || !hora) {
-    alert("⛔ Preencha todos os campos!");
+    mostrarMsg("Preencha todos os campos.", "danger");
+
     return;
   }
 
