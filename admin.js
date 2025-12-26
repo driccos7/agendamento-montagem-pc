@@ -2,18 +2,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getFirestore, collection, getDocs, deleteDoc, doc }
 from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const senhaCorreta = "pc2025"; // 🔴 MUDE ISSO
+// 🔐 Senha do admin
+const senhaCorreta = "pc2025"; // já configurada
 
-function login() {
-  if (document.getElementById("senha").value !== senhaCorreta) {
-    alert("Senha errada");
-    return;
-  }
-  carregar();
-}
-
-window.login = login;
-
+// 🔹 Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCclgaKtHJ_fKlDcuhsf_hoPOMrVSAhQvk",
   authDomain: "agendamento-montagem-pc-5c626.firebaseapp.com",
@@ -26,21 +18,39 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// 🔹 Função de login
+function login() {
+  const senha = document.getElementById("senha").value;
+  if (senha !== senhaCorreta) {
+    alert("Senha errada");
+    return;
+  }
+  document.getElementById("senha").value = "";
+  carregar(); // só carrega se a senha estiver correta
+}
+
+// 🔹 Função para carregar agendamentos
 async function carregar() {
   const lista = document.getElementById("lista");
   lista.innerHTML = "";
 
   const dados = await getDocs(collection(db, "agendamentos"));
   dados.forEach(d => {
-    lista.innerHTML += `
-      <li>
-        ${d.data().nome} - ${d.data().data} ${d.data().hora}
-        <button onclick="remover('${d.id}')">❌</button>
-      </li>`;
+    const li = document.createElement("li");
+    li.innerHTML = `
+      ${d.data().nome} - ${d.data().data} ${d.data().hora} 
+      <button>❌</button>
+    `;
+
+    const btn = li.querySelector("button");
+    btn.addEventListener("click", async () => {
+      await deleteDoc(doc(db, "agendamentos", d.id));
+      carregar();
+    });
+
+    lista.appendChild(li);
   });
 }
 
-window.remover = async (id) => {
-  await deleteDoc(doc(db, "agendamentos", id));
-  carregar();
-};
+window.login = login;
+
