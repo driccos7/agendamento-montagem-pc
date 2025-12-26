@@ -60,6 +60,8 @@ const LIMITE_DIARIO = 5;
 async function carregarHorarios(dataSelecionada) {
   horaInput.innerHTML = '<option value="">Escolha um horário</option>';
   horaInput.disabled = false;
+  horaInput.disabled = true;
+
 
   diaLotadoDiv.classList.add("d-none");
 
